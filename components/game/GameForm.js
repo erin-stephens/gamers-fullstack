@@ -2,17 +2,20 @@ import { useRouter } from 'next/router';
 import PropTypes from 'prop-types';
 import { useState, useEffect } from 'react';
 import { Button, Form, FloatingLabel } from 'react-bootstrap';
-import { createGame, getGameTypes } from '../../utils/data/gameData';
+import {
+  createGame, getGameTypes, updateGame,
+} from '../../utils/data/gameData';
+import { useAuth } from '../../utils/context/authContext';
 
 const initialState = {
-  skillLevel: 1,
-  numberOfPlayers: 0,
+  skillLevel: '',
+  numberOfPlayers: '',
   title: '',
   maker: '',
   gameTypeId: 0,
 };
 
-const GameForm = ({ user }) => {
+const GameForm = ({ obj }) => {
   const [gameTypes, setGameTypes] = useState([]);
   /*
   Since the input fields are bound to the values of
@@ -21,10 +24,22 @@ const GameForm = ({ user }) => {
   */
   const [currentGame, setCurrentGame] = useState(initialState);
   const router = useRouter();
+  const { user } = useAuth();
 
   useEffect(() => {
     getGameTypes().then(setGameTypes);
-  }, []);
+    if (obj.id) {
+      setCurrentGame({
+        id: obj.id,
+        gameTypeId: obj.game_type.id,
+        maker: obj.maker,
+        title: obj.title,
+        numberOfPlayers: obj.number_of_players,
+        skillLevel: obj.skill_level,
+        userId: user.uid,
+      });
+    }
+  }, [obj, user]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -37,18 +52,21 @@ const GameForm = ({ user }) => {
   const handleSubmit = (e) => {
     // Prevent form from being submitted
     e.preventDefault();
+    if (obj.id) {
+      updateGame(currentGame).then(() => router.push('/games'));
+    } else {
+      const game = {
+        maker: currentGame.maker,
+        title: currentGame.title,
+        numberOfPlayers: Number(currentGame.numberOfPlayers),
+        skillLevel: Number(currentGame.skillLevel),
+        gameType: Number(currentGame.gameTypeId),
+        userId: user.uid,
+      };
 
-    const game = {
-      maker: currentGame.maker,
-      title: currentGame.title,
-      numberOfPlayers: Number(currentGame.numberOfPlayers),
-      skillLevel: Number(currentGame.skillLevel),
-      gameType: Number(currentGame.gameTypeId),
-      userId: user.uid,
-    };
-
-    // Send POST request to your API
-    createGame(game).then(() => router.push('/games'));
+      // Send POST request to your API
+      createGame(game).then(() => router.push('/games'));
+    }
   };
 
   return (
@@ -119,8 +137,15 @@ const GameForm = ({ user }) => {
 };
 
 GameForm.propTypes = {
-  user: PropTypes.shape({
-    uid: PropTypes.string.isRequired,
+  obj: PropTypes.shape({
+    skill_level: PropTypes.number,
+    number_of_players: PropTypes.number,
+    title: PropTypes.string,
+    maker: PropTypes.string,
+    game_type: PropTypes.shape({
+      id: PropTypes.number,
+    }),
+    id: PropTypes.number,
   }).isRequired,
 };
 
