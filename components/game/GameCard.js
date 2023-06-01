@@ -34,7 +34,7 @@ GameCard.propTypes = {
   maker: PropTypes.string.isRequired,
   numberOfPlayers: PropTypes.number.isRequired,
   skillLevel: PropTypes.number.isRequired,
-  id: PropTypes.string.isRequired,
+  id: PropTypes.number.isRequired,
 };
 
 export default GameCard;

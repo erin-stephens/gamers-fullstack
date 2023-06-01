@@ -43,14 +43,13 @@ const deleteGame = (id) => new Promise((resolve, reject) => {
 
 const updateGame = (game) => new Promise((resolve, reject) => {
   fetch(`${clientCredentials.databaseURL}/games/${game.id}`, {
-    method: 'POST',
+    method: 'PUT',
     body: JSON.stringify(game),
     headers: {
       'Content-Type': 'application/json',
-      Accept: 'application/json',
     },
   })
-    .then((resp) => resolve(resp.json()))
+    .then(resolve)
     .catch(reject);
 });
 

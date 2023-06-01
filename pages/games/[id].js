@@ -17,7 +17,7 @@ export default function ViewGame() {
       <h3>maker: {game.maker}</h3>
       <h3>Number of Players: {game.number_of_players}</h3>
       <h3>Skill Level: {game.skill_level}</h3>
-      <h3>Game Type: {game.label}</h3>
+      {/* <h3>Game Type: {game.game_type.label}</h3> */}
     </div>
   );
 }

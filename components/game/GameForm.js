@@ -12,7 +12,7 @@ const initialState = {
   numberOfPlayers: '',
   title: '',
   maker: '',
-  gameTypeId: 0,
+  gameTypeId: '',
 };
 
 const GameForm = ({ obj }) => {
@@ -31,7 +31,7 @@ const GameForm = ({ obj }) => {
     if (obj.id) {
       setCurrentGame({
         id: obj.id,
-        gameTypeId: obj.game_type.id,
+        gameType: obj.game_type.id,
         maker: obj.maker,
         title: obj.title,
         numberOfPlayers: obj.number_of_players,
@@ -53,7 +53,16 @@ const GameForm = ({ obj }) => {
     // Prevent form from being submitted
     e.preventDefault();
     if (obj.id) {
-      updateGame(currentGame).then(() => router.push('/games'));
+      const gameUpdate = {
+        id: obj.id,
+        maker: currentGame.maker,
+        title: currentGame.title,
+        numberOfPlayers: Number(currentGame.numberOfPlayers),
+        skillLevel: Number(currentGame.skillLevel),
+        gameType: Number(currentGame.gameTypeId),
+        userId: user.uid,
+      };
+      updateGame(gameUpdate).then(() => router.push('/games'));
     } else {
       const game = {
         maker: currentGame.maker,
