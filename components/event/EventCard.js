@@ -1,35 +1,44 @@
 import PropTypes from 'prop-types';
 import React from 'react';
 import { Card, Dropdown } from 'react-bootstrap';
+import { deleteEvent } from '../../utils/data/eventData';
 
-const EventCard = ({
+function EventCard({
   game,
   description,
   date,
   time,
   organizer,
   id,
-}) => (
-  <Card className="text-center">
-    <Card.Header>{game.title}</Card.Header>
-    <Card.Body>
-      <Card.Title>By: {organizer.bio}</Card.Title>
-      <Card.Text>{description}</Card.Text>
-      <Card.Text>{date}</Card.Text>
-      <Card.Text>{time}</Card.Text>
-      <Dropdown>
-        <Dropdown.Toggle className="dropdownBtn">
-          Options
-        </Dropdown.Toggle>
-        <Dropdown.Menu>
-          <Dropdown.Item href={`/events/${id}`}>View</Dropdown.Item>
-          <Dropdown.Item href={`/events/edit/${id}`}>Edit</Dropdown.Item>
-          <Dropdown.Item>Delete</Dropdown.Item>
-        </Dropdown.Menu>
-      </Dropdown>
-    </Card.Body>
-  </Card>
-);
+  onUpdate,
+}) {
+  const deleteThisEvent = () => {
+    if (window.confirm(`Delete ${date}?`)) {
+      deleteEvent(id).then(() => onUpdate());
+    }
+  };
+  return (
+    <Card className="text-center">
+      <Card.Header>{game.title}</Card.Header>
+      <Card.Body>
+        <Card.Title>By: {organizer.bio}</Card.Title>
+        <Card.Text>{description}</Card.Text>
+        <Card.Text>{date}</Card.Text>
+        <Card.Text>{time}</Card.Text>
+        <Dropdown>
+          <Dropdown.Toggle className="dropdownBtn">
+            Options
+          </Dropdown.Toggle>
+          <Dropdown.Menu>
+            <Dropdown.Item href={`/events/${id}`}>View</Dropdown.Item>
+            <Dropdown.Item href={`/events/edit/${id}`}>Edit</Dropdown.Item>
+            <Dropdown.Item onClick={deleteThisEvent}>Delete</Dropdown.Item>
+          </Dropdown.Menu>
+        </Dropdown>
+      </Card.Body>
+    </Card>
+  );
+}
 
 EventCard.propTypes = {
   game: PropTypes.shape({
@@ -42,6 +51,7 @@ EventCard.propTypes = {
     bio: PropTypes.string,
   }).isRequired,
   id: PropTypes.number.isRequired,
+  onUpdate: PropTypes.func.isRequired,
 };
 
 export default EventCard;
