@@ -156,7 +156,11 @@ GameForm.propTypes = {
       id: PropTypes.number,
     }),
     id: PropTypes.number,
-  }).isRequired,
+  }),
+};
+
+GameForm.defaultProps = {
+  obj: initialState,
 };
 
 export default GameForm;

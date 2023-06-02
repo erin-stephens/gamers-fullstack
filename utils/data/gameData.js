@@ -35,8 +35,12 @@ const getGameTypes = () => new Promise((resolve, reject) => {
 });
 
 const deleteGame = (id) => new Promise((resolve, reject) => {
-  fetch(`${clientCredentials.databaseURL}/games/${id}`)
-    .then((response) => response.json())
+  fetch(`${clientCredentials.databaseURL}/games/${id}`, {
+    method: 'DELETE',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+  })
     .then(resolve)
     .catch(reject);
 });
