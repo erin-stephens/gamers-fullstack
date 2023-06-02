@@ -30,13 +30,14 @@ const EventForm = ({ obj }) => {
     if (obj.id) {
       setCurrentEvent({
         id: obj.id,
-        game: obj.game,
+        game: obj.game.id,
         description: obj.description,
         time: obj.time,
         date: obj.date,
       });
     }
   }, [obj, user]);
+  console.warn(currentEvent);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -83,6 +84,7 @@ const EventForm = ({ obj }) => {
               name="game"
               onChange={handleChange}
               className="mb-3"
+              value={currentEvent.game}
               required
             >
               <option value="">Select a Game</option>

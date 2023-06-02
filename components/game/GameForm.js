@@ -12,7 +12,7 @@ const initialState = {
   numberOfPlayers: '',
   title: '',
   maker: '',
-  gameTypeId: '',
+  gameType: '',
 };
 
 const GameForm = ({ obj }) => {
@@ -31,7 +31,7 @@ const GameForm = ({ obj }) => {
     if (obj.id) {
       setCurrentGame({
         id: obj.id,
-        gameType: obj.game_type.id,
+        gameType: obj.game_type?.id,
         maker: obj.maker,
         title: obj.title,
         numberOfPlayers: obj.number_of_players,
@@ -59,7 +59,7 @@ const GameForm = ({ obj }) => {
         title: currentGame.title,
         numberOfPlayers: Number(currentGame.numberOfPlayers),
         skillLevel: Number(currentGame.skillLevel),
-        gameType: Number(currentGame.gameTypeId),
+        gameType: Number(currentGame.gameType),
         userId: user.uid,
       };
       updateGame(gameUpdate).then(() => router.push('/games'));
@@ -69,7 +69,7 @@ const GameForm = ({ obj }) => {
         title: currentGame.title,
         numberOfPlayers: Number(currentGame.numberOfPlayers),
         skillLevel: Number(currentGame.skillLevel),
-        gameType: Number(currentGame.gameTypeId),
+        gameType: Number(currentGame.gameType),
         userId: user.uid,
       };
 
@@ -118,9 +118,10 @@ const GameForm = ({ obj }) => {
         <FloatingLabel controlId="floatingSelect">
           <Form.Select
             aria-label="GameType"
-            name="gameTypeId"
+            name="gameType"
             onChange={handleChange}
             className="mb-3"
+            value={currentGame.gameType}
             required
           >
             <option value="">Select a Game Type</option>

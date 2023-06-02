@@ -10,12 +10,7 @@ export default function EditGame() {
   const { id } = router.query;
 
   useEffect(() => {
-    getSingleGame(id).then((obj) => {
-      obj.numberOfPlayers = obj.number_of_players;
-      obj.skillLevel = obj.skill_level;
-      obj.gameTypeId = obj.game_type.id;
-      setEditGame(obj);
-    });
+    getSingleGame(id).then(setEditGame);
   }, [id]);
 
   return (
