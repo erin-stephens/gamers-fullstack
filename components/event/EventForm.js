@@ -2,8 +2,9 @@ import { useRouter } from 'next/router';
 import PropTypes from 'prop-types';
 import { useState, useEffect } from 'react';
 import { Button, Form, FloatingLabel } from 'react-bootstrap';
-import { createEvent } from '../../utils/data/eventData';
+import { createEvent, updateEvent } from '../../utils/data/eventData';
 import { getGames } from '../../utils/data/gameData';
+import { useAuth } from '../../utils/context/authContext';
 
 const initialState = {
   game: 0,
@@ -13,7 +14,7 @@ const initialState = {
   organizer: 0,
 };
 
-const EventForm = ({ user }) => {
+const EventForm = ({ obj }) => {
   const [games, setGames] = useState([]);
   /*
   Since the input fields are bound to the values of
@@ -22,10 +23,21 @@ const EventForm = ({ user }) => {
   */
   const [currentEvent, setCurrentEvent] = useState(initialState);
   const router = useRouter();
+  const user = useAuth();
 
   useEffect(() => {
     getGames().then(setGames);
-  }, []);
+    if (obj.id) {
+      setCurrentEvent({
+        id: obj.id,
+        game: obj.game.id,
+        description: obj.description,
+        time: obj.time,
+        date: obj.date,
+      });
+    }
+  }, [obj, user]);
+  console.warn(currentEvent);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -38,17 +50,28 @@ const EventForm = ({ user }) => {
   const handleSubmit = (e) => {
     // Prevent form from being submitted
     e.preventDefault();
+    if (obj.id) {
+      const eventUpdate = {
+        id: obj.id,
+        game: currentEvent.game,
+        description: currentEvent.description,
+        time: currentEvent.time,
+        date: currentEvent.date,
+        userId: user.uid,
+      };
+      updateEvent(eventUpdate).then(() => router.push('/events'));
+    } else {
+      const event = {
+        game: currentEvent.game,
+        description: currentEvent.description,
+        date: currentEvent.date,
+        time: currentEvent.time,
+        userId: user.uid,
+      };
 
-    const event = {
-      game: currentEvent.gameId,
-      description: currentEvent.description,
-      date: currentEvent.date,
-      time: currentEvent.time,
-      userId: user.uid,
-    };
-
-    // Send POST request to your API
-    createEvent(event).then(() => router.push('/events'));
+      // Send POST request to your API
+      createEvent(event).then(() => router.push('/events'));
+    }
   };
 
   return (
@@ -58,9 +81,10 @@ const EventForm = ({ user }) => {
           <FloatingLabel controlId="floatingSelect">
             <Form.Select
               aria-label="Game"
-              name="gameId"
+              name="game"
               onChange={handleChange}
               className="mb-3"
+              value={currentEvent.game}
               required
             >
               <option value="">Select a Game</option>
@@ -121,8 +145,14 @@ const EventForm = ({ user }) => {
 };
 
 EventForm.propTypes = {
-  user: PropTypes.shape({
-    uid: PropTypes.string.isRequired,
+  obj: PropTypes.shape({
+    game: PropTypes.shape({
+      id: PropTypes.number,
+    }),
+    date: PropTypes.string,
+    time: PropTypes.string,
+    description: PropTypes.string,
+    id: PropTypes.number,
   }).isRequired,
 };
 
