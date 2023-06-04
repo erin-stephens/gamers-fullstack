@@ -1,7 +1,8 @@
 import PropTypes from 'prop-types';
 import React from 'react';
-import { Card, Dropdown } from 'react-bootstrap';
-import { deleteEvent } from '../../utils/data/eventData';
+import { Card, Dropdown, Button } from 'react-bootstrap';
+import { deleteEvent, joinEvent, leaveEvent } from '../../utils/data/eventData';
+import { useAuth } from '../../utils/context/authContext';
 
 function EventCard({
   game,
@@ -11,11 +12,20 @@ function EventCard({
   organizer,
   id,
   onUpdate,
+  joined,
 }) {
+  const { user } = useAuth();
   const deleteThisEvent = () => {
     if (window.confirm(`Delete ${date}?`)) {
       deleteEvent(id).then(() => onUpdate());
     }
+  };
+
+  const join = () => {
+    joinEvent(id, user.uid).then(() => onUpdate());
+  };
+  const leave = () => {
+    leaveEvent(id, user.uid).then(() => onUpdate());
   };
   return (
     <Card className="text-center">
@@ -35,6 +45,7 @@ function EventCard({
             <Dropdown.Item onClick={deleteThisEvent}>Delete</Dropdown.Item>
           </Dropdown.Menu>
         </Dropdown>
+        {joined ? <Button onClick={leave}>Leave</Button> : <Button onClick={join}>Join</Button>}
       </Card.Body>
     </Card>
   );
@@ -52,6 +63,7 @@ EventCard.propTypes = {
   }).isRequired,
   id: PropTypes.number.isRequired,
   onUpdate: PropTypes.func.isRequired,
+  joined: PropTypes.bool.isRequired,
 };
 
 export default EventCard;
